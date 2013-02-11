@@ -10,19 +10,17 @@ phutil_register_library_map(array(
   '__library_version__' => 2,
   'class' =>
   array(
-    'AbstractSvtLinter' => 'linters/AbstractSvtLinter.php',
-    'GeneralSvtLinter' => 'linters/GeneralSvtLinter.php',
-    'PhpLintSvtLinter' => 'linters/PhpLintSvtLinter.php',
     'SvtLintEngine' => 'engine/SvtLintEngine.php',
+    'SvtPhpLintLinter' => 'linters/SvtPhpLintLinter.php',
+    'SvtTextLinter' => 'linters/SvtTextLinter.php',
   ),
   'function' =>
   array(
   ),
   'xmap' =>
   array(
-    'AbstractSvtLinter' => 'ArcanistLinter',
-    'GeneralSvtLinter' => 'AbstractSvtLinter',
-    'PhpLintSvtLinter' => 'AbstractSvtLinter',
     'SvtLintEngine' => 'ArcanistLintEngine',
+    'SvtPhpLintLinter' => 'ArcanistLinter',
+    'SvtTextLinter' => 'ArcanistLinter',
   ),
 ));
