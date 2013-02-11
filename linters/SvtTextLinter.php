@@ -36,11 +36,11 @@ final class SvtTextLinter extends ArcanistLinter {
     }
 
     public function getLintSeverityMap() {
-	    //default is ERROR
+        //default is ERROR
         return array(
             self::LINT_LINE_WRAP => ArcanistLintSeverity::SEVERITY_WARNING,
-            self::LINT_TRAILING_WHITESPACE => 
-				ArcanistLintSeverity::SEVERITY_AUTOFIX,
+            self::LINT_TRAILING_WHITESPACE =>
+                ArcanistLintSeverity::SEVERITY_AUTOFIX,
         );
     }
 
@@ -102,10 +102,10 @@ final class SvtTextLinter extends ArcanistLinter {
     protected function lintTabs($path) {
         $data = $this->getData($path);
         $lines = explode("\n", $data);
-        
+
         for ($i = 0; $i < count($lines); $i++) {
             $line = $lines[$i];
-            
+
             //detect non-expanded tabs
             $preg = preg_match_all(
                 '/\t/',
@@ -113,19 +113,19 @@ final class SvtTextLinter extends ArcanistLinter {
             if (!$preg) {
                 continue;
             }
-            
+
             //expand tabs
-	        $exptab_line = str_replace("\t", "    ", $line);
-            
+            $exptab_line = str_replace("\t", "    ", $line);
+
             //there might be new trailing whitespaces
             $exptab_line = preg_replace("/ +$/", '', $exptab_line);
-            
+
             $this->raiseLintAtLine(
                 $i + 1,
                 1,
                 self::LINT_TAB_LITERAL,
                 'This line contains tab literal. Consider setting up your '.
-					'editor to use spaces for indentation',
+                    'editor to use spaces for indentation',
                 $line,
                 $exptab_line);
         }

@@ -2,15 +2,16 @@
 /**
  * Lint engine - glue code that specifies which linter will be run
  * on which file
- * 
+ *
  * @copyright Copyright (c) 2013 The FMFI Anketa authors (see AUTHORS).
  * Use of this source code is governed by a license that can be
  * found in the LICENSE file in the project root directory.
- * 
+ *
  * @author     Frantisek Hajnovic <ferohajnovic@gmail.com>
  */
 
 final class SvtLintEngine extends ArcanistLintEngine {
+
     public function buildLinters() {
         //create linters
         $svt_text_linter = new SvtTextLinter();

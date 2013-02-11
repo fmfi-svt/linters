@@ -109,5 +109,4 @@ final class SvtPhpLintLinter extends ArcanistLinter {
         $lines = $new_lines;
         return $lines;
     }
-
 }
