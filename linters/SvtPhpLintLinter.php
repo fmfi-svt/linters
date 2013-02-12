@@ -47,14 +47,6 @@ final class SvtPhpLintLinter extends ArcanistLinter {
         return;
     }
 
-    public function getLintSeverityMap() {
-        return array();
-    }
-
-    public function getLintNameMap() {
-        return array();
-    }
-
     public function getLinterName() {
         return 'SvtPhpLintLinter';
     }
@@ -89,7 +81,7 @@ final class SvtPhpLintLinter extends ArcanistLinter {
             }
             //unexpected php -l output line
             else {
-                $message->setCode("PHP-LINT-UNEX");
+                $message->setCode("PHP-LINT-UNEXP");
                 $message->setDescription($line);
             }
 
