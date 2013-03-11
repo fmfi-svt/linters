@@ -70,7 +70,7 @@ final class SvtTextLinter extends ArcanistLinter {
             return;
         }
 
-        $this->lintCharset($path);
+        //$this->lintCharset($path);
 
         if ($this->didStopAllLinters()) {
             return;
