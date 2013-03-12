@@ -22,7 +22,27 @@ final class SvtPhpLintLinter extends ArcanistLinter {
      */
     private $results;
 
-    private $VARDUMP_FUNCS = array("var_dump", "var_export", "print_r", "echo");
+    //vardump functions
+    private $VARDUMP_FUNCS = array(
+        "var_dump",
+        "var_export",
+        "print_r",
+        "echo",
+        "print",
+        );
+    private $vardump_funcs_s;
+
+    //vardump language constructs
+    private $VARDUMP_CONS = array(
+        "echo",
+        "print",
+        );
+    private $vardump_cons_s;
+
+    public function __construct() {
+        $this->vardump_funcs_s = implode(", ", $this->VARDUMP_FUNCS);
+        $this->vardump_cons_s = implode(", ", $this->VARDUMP_CONS);
+    }
 
     public function getLintSeverityMap() {
         //default is ERROR
@@ -80,19 +100,18 @@ final class SvtPhpLintLinter extends ArcanistLinter {
 
         //make regular expression to search for
         $bad_re = '';
-        $bad_str = '';
-        foreach ($this->VARDUMP_FUNCS as $bad_func) {
-            $bad_re .= '(' . $bad_func . ')|';
-            $bad_str .= '\'' . $bad_func . '\', ';
+        foreach ($this->VARDUMP_FUNCS as $func) {
+            $bad_re .= '((^|\s)' . preg_quote($func) . '\s*\()|';
+        }
+        foreach ($this->VARDUMP_CONS as $con) {
+            $bad_re .= '((^|\s)' . preg_quote($con) . '\s)|';
         }
         $bad_re = substr($bad_re, 0, -1);
-        $bad_re .= '';
-        $bad_str = substr($bad_str, 0, -2);
 
         //get matches to our RE and locations of the matches
         $matches = null;
         $preg = preg_match_all(
-            "/{$bad_re}(.*{$bad_re})?/",
+            "/{$bad_re}/",
             $data,
             $matches,
             PREG_OFFSET_CAPTURE);
@@ -107,8 +126,9 @@ final class SvtPhpLintLinter extends ArcanistLinter {
             $this->raiseLintAtOffset(
                 $offset,
                 self::LINT_VAR_DUMPS,
-                'Php functions ' . $bad_str . ' should not be used as twig ' .
-                    'engine should be enough to do the output',
+                'Php functions [' . $this->vardump_funcs_s . ']' . 
+                    ' or constructs [' . $this->vardump_cons_s . '] ' . 
+                    'should not be used since twig engine does the output',
                 $string);
         }
     }
