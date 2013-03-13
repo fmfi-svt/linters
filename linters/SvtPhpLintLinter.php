@@ -31,6 +31,7 @@ final class SvtPhpLintLinter extends ArcanistLinter {
         "print",
         );
     private $vardump_funcs_s;
+    private $vardump_funcs_re;
 
     //vardump language constructs
     private $VARDUMP_CONS = array(
@@ -38,10 +39,20 @@ final class SvtPhpLintLinter extends ArcanistLinter {
         "print",
         );
     private $vardump_cons_s;
+    private $vardump_cons_re;
 
     public function __construct() {
+        //make string out of array
         $this->vardump_funcs_s = implode(", ", $this->VARDUMP_FUNCS);
         $this->vardump_cons_s = implode(", ", $this->VARDUMP_CONS);
+
+        //make regular expressions to look for
+        $this->vardump_funcs_re = '\b(';
+        $this->vardump_funcs_re .= implode("|", $this->VARDUMP_FUNCS);
+        $this->vardump_funcs_re .= ')\s*\(';
+        $this->vardump_cons_re = '\b(';
+        $this->vardump_cons_re .= implode("|", $this->VARDUMP_CONS);
+        $this->vardump_cons_re .= ')\b';
     }
 
     public function getLintSeverityMap() {
@@ -98,20 +109,10 @@ final class SvtPhpLintLinter extends ArcanistLinter {
     protected function lintVarDumps($path) {
         $data = $this->getData($path);
 
-        //make regular expression to search for
-        $bad_re = '';
-        foreach ($this->VARDUMP_FUNCS as $func) {
-            $bad_re .= '((^|\s)' . preg_quote($func) . '\s*\()|';
-        }
-        foreach ($this->VARDUMP_CONS as $con) {
-            $bad_re .= '((^|\s)' . preg_quote($con) . '\s)|';
-        }
-        $bad_re = substr($bad_re, 0, -1);
-
         //get matches to our RE and locations of the matches
         $matches = null;
         $preg = preg_match_all(
-            "/{$bad_re}/",
+            "/{$this->vardump_funcs_re}|{$this->vardump_cons_re}/",
             $data,
             $matches,
             PREG_OFFSET_CAPTURE);
@@ -126,8 +127,8 @@ final class SvtPhpLintLinter extends ArcanistLinter {
             $this->raiseLintAtOffset(
                 $offset,
                 self::LINT_VAR_DUMPS,
-                'Php functions [' . $this->vardump_funcs_s . ']' . 
-                    ' or constructs [' . $this->vardump_cons_s . '] ' . 
+                'Php functions [' . $this->vardump_funcs_s . ']' .
+                    ' or constructs [' . $this->vardump_cons_s . '] ' .
                     'should not be used since twig engine does the output',
                 $string);
         }
