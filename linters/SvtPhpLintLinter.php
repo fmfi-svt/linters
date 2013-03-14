@@ -15,45 +15,18 @@ final class SvtPhpLintLinter extends ArcanistLinter {
     const LINT_PHP_ERRS                 = 1;
     const LINT_VAR_DUMPS                = 2;
 
+    //vardump functions
+    const BAD_FUNCS_RE = '\b(var_dump|var_export|print_r|echo|print)\s*\(';
+
+    //vardump language constructs
+    const BAD_CONS_RE = '\b(echo|print)\b';
+
     /**
      *
      * @var array[$path]->list($stdout, $stderr) output of running php -l
      * for file $path
      */
     private $results;
-
-    //vardump functions
-    private $VARDUMP_FUNCS = array(
-        "var_dump",
-        "var_export",
-        "print_r",
-        "echo",
-        "print",
-        );
-    private $vardump_funcs_s;
-    private $vardump_funcs_re;
-
-    //vardump language constructs
-    private $VARDUMP_CONS = array(
-        "echo",
-        "print",
-        );
-    private $vardump_cons_s;
-    private $vardump_cons_re;
-
-    public function __construct() {
-        //make string out of array
-        $this->vardump_funcs_s = implode(", ", $this->VARDUMP_FUNCS);
-        $this->vardump_cons_s = implode(", ", $this->VARDUMP_CONS);
-
-        //make regular expressions to look for
-        $this->vardump_funcs_re = '\b(';
-        $this->vardump_funcs_re .= implode("|", $this->VARDUMP_FUNCS);
-        $this->vardump_funcs_re .= ')\s*\(';
-        $this->vardump_cons_re = '\b(';
-        $this->vardump_cons_re .= implode("|", $this->VARDUMP_CONS);
-        $this->vardump_cons_re .= ')\b';
-    }
 
     public function getLintSeverityMap() {
         //default is ERROR
@@ -109,10 +82,12 @@ final class SvtPhpLintLinter extends ArcanistLinter {
     protected function lintVarDumps($path) {
         $data = $this->getData($path);
 
+        $bad_re = '/(' . self::BAD_FUNCS_RE . ')|(' . self::BAD_CONS_RE . ')/';
+
         //get matches to our RE and locations of the matches
         $matches = null;
         $preg = preg_match_all(
-            "/{$this->vardump_funcs_re}|{$this->vardump_cons_re}/",
+            $bad_re,
             $data,
             $matches,
             PREG_OFFSET_CAPTURE);
@@ -127,8 +102,7 @@ final class SvtPhpLintLinter extends ArcanistLinter {
             $this->raiseLintAtOffset(
                 $offset,
                 self::LINT_VAR_DUMPS,
-                'Php functions [' . $this->vardump_funcs_s . ']' .
-                    ' or constructs [' . $this->vardump_cons_s . '] ' .
+                'This function or language construct ' .
                     'should not be used since twig engine does the output',
                 $string);
         }
