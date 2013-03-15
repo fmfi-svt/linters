@@ -199,4 +199,5 @@ final class SvtTextLinter extends ArcanistLinter {
                 $deadly);
         }
     }
+
 }

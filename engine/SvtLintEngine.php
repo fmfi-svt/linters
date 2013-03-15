@@ -15,7 +15,8 @@ final class SvtLintEngine extends ArcanistLintEngine {
     public function buildLinters() {
         //create linters
         $svt_text_linter = new SvtTextLinter();
-        $svt_phplint_linter = new SvtPhpLintLinter();
+        $svt_php_syntax_linter = new SvtPhpSyntaxLinter();
+        $svt_php_var_dumps_linter = new SvtPhpVarDumpsLinter();
 
         //get paths of files to be checked
         $paths = $this->getPaths();
@@ -28,7 +29,8 @@ final class SvtLintEngine extends ArcanistLintEngine {
         //set which files will be linted by which linter
         foreach ($paths as $path) {
             if (preg_match('/\.php$/', $path)) {
-                $svt_phplint_linter->addPath($path);
+                $svt_php_syntax_linter->addPath($path);
+                $svt_php_var_dumps_linter->addPath($path);
             }
             if (preg_match('/\.php$|\.py$|\.js$|\.css$|\.twig$|\.yml$/',
                     $path)) {
@@ -38,8 +40,10 @@ final class SvtLintEngine extends ArcanistLintEngine {
 
         //return linters and lint
         return array(
-            $svt_phplint_linter,
+            $svt_php_syntax_linter,
+            $svt_php_var_dumps_linter,
             $svt_text_linter,
         );
     }
+
 }

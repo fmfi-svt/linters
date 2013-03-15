@@ -11,7 +11,8 @@ phutil_register_library_map(array(
   'class' =>
   array(
     'SvtLintEngine' => 'engine/SvtLintEngine.php',
-    'SvtPhpLintLinter' => 'linters/SvtPhpLintLinter.php',
+    'SvtPhpSyntaxLinter' => 'linters/SvtPhpSyntaxLinter.php',
+    'SvtPhpVarDumpsLinter' => 'linters/SvtPhpVarDumpsLinter.php',
     'SvtTextLinter' => 'linters/SvtTextLinter.php',
   ),
   'function' =>
@@ -20,7 +21,8 @@ phutil_register_library_map(array(
   'xmap' =>
   array(
     'SvtLintEngine' => 'ArcanistLintEngine',
-    'SvtPhpLintLinter' => 'ArcanistLinter',
+    'SvtPhpSyntaxLinter' => 'ArcanistLinter',
+    'SvtPhpVarDumpsLinter' => 'ArcanistLinter',
     'SvtTextLinter' => 'ArcanistLinter',
   ),
 ));
