@@ -60,8 +60,9 @@ final class SvtPhpVarDumpsLinter extends ArcanistLinter {
             $this->raiseLintAtOffset(
                 $offset,
                 self::LINT_VAR_DUMPS,
-                'This function or language construct ' .
-                    'should not be used since twig engine does the output',
+                'Usage of suspicious function/language construct detected. ' .
+                    'Please make sure to use templates for output and ' .
+                    'do not accidentally commit debugging code',
                 $string);
         }
     }
