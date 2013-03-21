@@ -1,0 +1,9 @@
+{
+  "project_id" : "Linters",
+  "conduit_uri" : "https://svt-devel.fmph.uniba.sk/",
+  "history.immutable" : true,
+  "load" : [
+    "."
+  ],
+  "lint.engine" : "SvtLintEngine"
+}
