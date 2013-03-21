@@ -1,0 +1,8 @@
+{
+    "name": "svt/linters",
+    "description": "Collection of useful linters.",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.2"
+    }
+}
