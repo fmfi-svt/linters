@@ -1,1 +1,5 @@
+*~
+.DS_Store
+.*.sw[a-z]
+Thumbs.db
 .phutil_module_cache
