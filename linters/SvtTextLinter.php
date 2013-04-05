@@ -72,7 +72,11 @@ final class SvtTextLinter extends ArcanistLinter {
             return;
         }
 
-        $this->lintLineLength($path);
+        //@TODO: Spravit nastavitelne podla projektu.
+        //       Pravdepdobne to znamena iny LintEngine pre kazdy projekt.
+        //       Nestil som totiz zeby v .arcconfigu mohli byt nejake ine
+        //       nastavenia linterov okrem enginu.
+        //$this->lintLineLength($path);
         $this->lintEOFNewline($path);
         $this->lintTrailingWhitespace($path);
 
