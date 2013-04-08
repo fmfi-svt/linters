@@ -74,7 +74,7 @@ final class SvtTextLinter extends ArcanistLinter {
 
         //@TODO: Spravit nastavitelne podla projektu.
         //       Pravdepdobne to znamena iny LintEngine pre kazdy projekt.
-        //       Nestil som totiz zeby v .arcconfigu mohli byt nejake ine
+        //       Nezistil som totiz zeby v .arcconfigu mohli byt nejake ine
         //       nastavenia linterov okrem enginu.
         //$this->lintLineLength($path);
         $this->lintEOFNewline($path);
@@ -107,7 +107,7 @@ final class SvtTextLinter extends ArcanistLinter {
             $line = $lines[$i];
 
             //detect non-expanded tabs
-            $preg = preg_match_all(
+            $preg = preg_match(
                 '/\t/',
                 $line);
             if (!$preg) {
