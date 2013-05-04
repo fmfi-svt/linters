@@ -20,7 +20,6 @@ final class SvtTextLinter extends ArcanistLinter {
     const LINT_NO_COMMIT                = 6;
 
     private $maxLineLength = 80;
-    private $doLineWrap = false;
 
     public function willLintPaths(array $paths) {
         $this->configureLinter();
@@ -30,9 +29,9 @@ final class SvtTextLinter extends ArcanistLinter {
     protected function configureLinter() {
         $working_copy = $this->getEngine()->getWorkingCopy();
 
-        $doLineWrap = $working_copy->getConfig('lint.text.linewrap');
-        if ($doLineWrap !== null) {
-            $this->doLineWrap =  $doLineWrap;
+        $maxLineLength = $working_copy->getConfig('lint.text.maxlinelength');
+        if ($maxLineLength !== null && $maxLineLength > 0) {
+            $this->maxLineLength =  $maxLineLength;
         }
     }
 
@@ -74,9 +73,7 @@ final class SvtTextLinter extends ArcanistLinter {
             return;
         }
 
-        if ($this->doLineWrap) {
-            $this->lintLineWrap($path);
-        }
+        $this->lintLineWrap($path);
         $this->lintEofNewline($path);
         $this->lintTrailingWhitespace($path);
 
