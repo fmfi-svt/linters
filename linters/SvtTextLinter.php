@@ -19,7 +19,8 @@ final class SvtTextLinter extends ArcanistLinter {
     const LINT_TRAILING_WHITESPACE      = 5;
     const LINT_NO_COMMIT                = 6;
 
-    private $maxLineLength = 80;
+    //default = do not check line length
+    private $maxLineLength = -1;
 
     public function willLintPaths(array $paths) {
         $this->configureLinter();
@@ -73,7 +74,9 @@ final class SvtTextLinter extends ArcanistLinter {
             return;
         }
 
-        $this->lintLineWrap($path);
+        if ($this->maxLineLength > -1) {
+            $this->lintLineWrap($path);
+        }
         $this->lintEofNewline($path);
         $this->lintTrailingWhitespace($path);
 
