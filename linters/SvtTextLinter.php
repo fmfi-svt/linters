@@ -13,21 +13,27 @@
 final class SvtTextLinter extends ArcanistLinter {
 
     const LINT_DOS_NEWLINE              = 1;
-    const LINT_TAB_LITERAL              = 2;
+    const LINT_TAB                      = 2;
     const LINT_LINE_WRAP                = 3;
     const LINT_EOF_NEWLINE              = 4;
     const LINT_TRAILING_WHITESPACE      = 5;
     const LINT_NO_COMMIT                = 6;
 
-    private $maxLineLength = 80;
-
-    public function setMaxLineLength($new_length) {
-        $this->maxLineLength = $new_length;
-        return $this;
-    }
+    //default = do not check line length
+    private $maxLineLength = -1;
 
     public function willLintPaths(array $paths) {
+        $this->configureLinter();
         return;
+    }
+
+    protected function configureLinter() {
+        $working_copy = $this->getEngine()->getWorkingCopy();
+
+        $maxLineLength = $working_copy->getConfig('lint.text.maxlinelength');
+        if ($maxLineLength !== null && $maxLineLength > 0) {
+            $this->maxLineLength =  $maxLineLength;
+        }
     }
 
     public function getLinterName() {
@@ -46,7 +52,7 @@ final class SvtTextLinter extends ArcanistLinter {
     public function getLintNameMap() {
         return array(
             self::LINT_DOS_NEWLINE         => 'DOS Newlines',
-            self::LINT_TAB_LITERAL         => 'Tab Literal',
+            self::LINT_TAB                 => 'Tab Literal',
             self::LINT_LINE_WRAP           => 'Line Too Long',
             self::LINT_EOF_NEWLINE         => 'File Does Not End in Newline',
             self::LINT_TRAILING_WHITESPACE => 'Trailing Whitespace',
@@ -61,23 +67,17 @@ final class SvtTextLinter extends ArcanistLinter {
             return;
         }
 
-        $this->lintNewlines($path);
-        $this->lintTabs($path);
+        $this->lintDosNewline($path);
+        $this->lintTab($path);
 
         if ($this->didStopAllLinters()) {
             return;
         }
 
-        if ($this->didStopAllLinters()) {
-            return;
+        if ($this->maxLineLength > -1) {
+            $this->lintLineWrap($path);
         }
-
-        //@TODO: Spravit nastavitelne podla projektu.
-        //       Pravdepdobne to znamena iny LintEngine pre kazdy projekt.
-        //       Nezistil som totiz zeby v .arcconfigu mohli byt nejake ine
-        //       nastavenia linterov okrem enginu.
-        //$this->lintLineLength($path);
-        $this->lintEOFNewline($path);
+        $this->lintEofNewline($path);
         $this->lintTrailingWhitespace($path);
 
         if ($this->getEngine()->getCommitHookMode()) {
@@ -85,7 +85,7 @@ final class SvtTextLinter extends ArcanistLinter {
         }
     }
 
-    protected function lintNewlines($path) {
+    protected function lintDosNewline($path) {
         $pos = strpos($this->getData($path), "\r");
         if ($pos !== false) {
             $this->raiseLintAtOffset(
@@ -99,7 +99,7 @@ final class SvtTextLinter extends ArcanistLinter {
         }
     }
 
-    protected function lintTabs($path) {
+    protected function lintTab($path) {
         $data = $this->getData($path);
         $lines = explode("\n", $data);
 
@@ -118,20 +118,20 @@ final class SvtTextLinter extends ArcanistLinter {
             $exptab_line = str_replace("\t", "    ", $line);
 
             //there might be new trailing whitespaces
-            $exptab_line = preg_replace("/ +$/", '', $exptab_line);
+            $rmtrail_line = preg_replace("/ +$/", '', $exptab_line);
 
             $this->raiseLintAtLine(
                 $i + 1,
                 1,
-                self::LINT_TAB_LITERAL,
+                self::LINT_TAB,
                 'This line contains tab literal. Consider setting up your '.
                     'editor to use spaces for indentation',
                 $line,
-                $exptab_line);
+                $rmtrail_line);
         }
     }
 
-    protected function lintLineLength($path) {
+    protected function lintLineWrap($path) {
         $lines = explode("\n", $this->getData($path));
 
         $width = $this->maxLineLength;
@@ -149,7 +149,7 @@ final class SvtTextLinter extends ArcanistLinter {
         }
     }
 
-    protected function lintEOFNewline($path) {
+    protected function lintEofNewline($path) {
         $data = $this->getData($path);
         if (!strlen($data) || $data[strlen($data) - 1] != "\n") {
             $this->raiseLintAtOffset(
