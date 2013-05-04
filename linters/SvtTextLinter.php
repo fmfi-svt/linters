@@ -20,7 +20,7 @@ final class SvtTextLinter extends ArcanistLinter {
     const LINT_NO_COMMIT                = 6;
 
     private $maxLineLength = 80;
-    private $doLineWrap = true;
+    private $doLineWrap = false;
 
     public function willLintPaths(array $paths) {
         $this->configureLinter();
