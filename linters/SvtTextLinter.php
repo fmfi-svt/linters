@@ -30,7 +30,10 @@ final class SvtTextLinter extends ArcanistLinter {
     protected function configureLinter() {
         $working_copy = $this->getEngine()->getWorkingCopy();
 
-        $this->doLineWrap = $working_copy->getConfig('lint.text.linewrap');
+        $doLineWrap = $working_copy->getConfig('lint.text.linewrap');
+        if ($doLineWrap !== null) {
+            $this->doLineWrap =  $doLineWrap;
+        }
     }
 
     public function getLinterName() {
